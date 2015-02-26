@@ -2,19 +2,17 @@ cmake_minimum_required(VERSION 2.8.3)
 project(pmvs_catkin)
 
 find_package(catkin_simple REQUIRED)
-catkin_simple(ALL_DEPS_REQUIRED)
-
-find_package(LAPACK REQUIRED)
-find_package(BLAS REQUIRED)
 find_package(Boost REQUIRED)
 find_package(JPEG REQUIRED)
-find_package(Threads REQUIRED)
+find_package(LAPACK REQUIRED)
+
+catkin_simple(ALL_DEPS_REQUIRED)
 
 set(BASE_PMVS base_pmvs)
 set(PMVS pmvs2)
 set(GENOPTION genOption)
 
-set(PMVS_LIBRARIES Xext X11 jpeg lapack ${CMAKE_THREAD_LIBS_INIT})
+set(PMVS_LIBRARIES Xext X11 jpeg lapack)
 
 # PMVS
 
@@ -49,5 +47,3 @@ cs_add_executable(${GENOPTION} src/genOption.cc)
 
 cs_install()
 cs_export()
-
-

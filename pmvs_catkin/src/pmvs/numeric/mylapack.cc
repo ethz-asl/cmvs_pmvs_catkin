@@ -7,6 +7,7 @@
 //#define PMVS_USE_LAPACK
 #include <Eigen/Dense>
 
+//TODO(mfehr): remove lapack if eigen has same/better performance
 #if defined(PMVS_USE_LAPACK)
 extern "C" {
 #include <clapack/f2c.h>

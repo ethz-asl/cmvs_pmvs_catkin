@@ -6,11 +6,11 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include <tinycthread.h>
 #include <queue>
 
 #include <boost/shared_ptr.hpp>
-#include "rwmutex.h"
+#include <tinycthread.h>
+#include <rwmutex.h>
 
 #include "pmvs/image/photoSetS.h"
 #include "pmvs/patchOrganizerS.h"

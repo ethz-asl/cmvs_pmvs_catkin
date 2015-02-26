@@ -4,16 +4,17 @@ project(cmvs_catkin)
 find_package(catkin_simple REQUIRED)
 catkin_simple(ALL_DEPS_REQUIRED)
 
-include_directories(thirdparty/graclus1.2/multilevelLib thirdparty/graclus1.2/metisLib)
 
 # GRACLUS
 
 add_definitions(-DNUMBITS=64)
 
+include_directories(thirdparty/graclus1.2/multilevelLib thirdparty/graclus1.2/metisLib)
+
 file(GLOB GRACLUS_LIB thirdparty/graclus1.2/metisLib/*.c)
 file(GLOB MULTILEVEL_LIB thirdparty/graclus1.2/multilevelLib/*.c)
-cs_add_library(graclus_lib ${GRACLUS_LIB}
-							 ${MULTILEVEL_LIB})
+cs_add_library(graclus_lib ${GRACLUS_LIB} ${MULTILEVEL_LIB})
+
 
 # CMVS
 
