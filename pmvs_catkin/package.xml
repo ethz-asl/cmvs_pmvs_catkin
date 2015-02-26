@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package>
+	<name>pmvs_catkin</name>
+	<version>0.0.0</version>
+	<description>pmvs_catkin</description>
+	<maintainer email="marius.b.fehr@gmail.com">Marius Fehr</maintainer>
+	<license>GPL</license>
+
+	<buildtool_depend>catkin</buildtool_depend>
+	<buildtool_depend>catkin_simple</buildtool_depend>
+
+	<build_depend>cmake_modules</build_depend>
+	<build_depend>eigen_catkin</build_depend>
+	<build_depend>nlopt</build_depend>
+	<build_depend>tinycthread_catkin</build_depend>
+</package>
