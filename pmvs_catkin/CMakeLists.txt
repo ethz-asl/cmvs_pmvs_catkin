@@ -1,18 +1,27 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(pmvs_catkin)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+
 find_package(catkin_simple REQUIRED)
+catkin_simple(ALL_DEPS_REQUIRED)
+
 find_package(Boost REQUIRED)
 find_package(JPEG REQUIRED)
 find_package(LAPACK REQUIRED)
+find_package(Xext REQUIRED)
+find_package(X11 REQUIRED)
 
-catkin_simple(ALL_DEPS_REQUIRED)
+include_directories(${X11_INCLUDE_DIRS})
+include_directories(${Xext_INCLUDE_DIRS})
+include_directories(${BOOST_INCLUDE_DIRS})
+include_directories(${JPEG_INCLUDE_DIR})
 
 set(BASE_PMVS base_pmvs)
 set(PMVS pmvs2)
 set(GENOPTION genOption)
 
-set(PMVS_LIBRARIES Xext X11 jpeg lapack)
+set(PMVS_LIBRARIES ${Xext_LIBRARIES} ${X11_LIBRARIES} ${JPEG_LIBRARIES} ${LAPACK_LIBRARIES})
 
 # PMVS
 
