@@ -3,7 +3,8 @@
 	<name>pmvs_catkin</name>
 	<version>0.0.0</version>
 	<description>pmvs_catkin</description>
-	<maintainer email="marius.b.fehr@gmail.com">Marius Fehr</maintainer>
+	<maintainer email="marius.b.fehr@gmail.com">mfehr</maintainer>
+	<maintainer email="simon.lynen@gmail.com">simonlynen</maintainer>
 	<license>GPL</license>
 
 	<buildtool_depend>catkin</buildtool_depend>
