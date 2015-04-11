@@ -87,6 +87,7 @@ void CpatchOrganizerS::writePatches2(const std::string prefix, bool bExportPLY, 
 
   if (bExportPatch)
   {
+
     char buffer[1024];
     sprintf(buffer, "%s.patch", prefix.c_str());
     ofstream ofstr;
@@ -96,11 +97,43 @@ void CpatchOrganizerS::writePatches2(const std::string prefix, bool bExportPLY, 
     for (int p = 0; p < (int)m_ppatches.size(); ++p) {
       Cpatch patch = *m_ppatches[p];
       index2image(patch);
-      ofstr << patch << "\n";
+
+      Vec3i color;
+      int denom = 0;
+      Vec3f colorf;
+      for (int i = 0; i < (int)patch.m_images.size(); ++i) {
+        const int image = patch.m_images[i];
+        colorf += m_fm.m_pss.getColor(patch.m_coord, image, m_fm.m_level);
+        denom++;
+      }
+      colorf /= denom;
+      color[0] = min(255,(int)floor(colorf[0] + 0.5f));
+      color[1] = min(255,(int)floor(colorf[1] + 0.5f));
+      color[2] = min(255,(int)floor(colorf[2] + 0.5f));
+
+      ofstr << "PATCHS" << endl
+          << patch.m_coord << endl
+          << patch.m_normal << endl
+          << patch.m_ncc << ' '
+          << patch.m_dscale << ' '
+          << patch.m_ascale << endl
+          << color[0] << ' '
+          << color[1] << ' '
+          << color[2] << endl
+          << (int)patch.m_images.size() << endl;
+      for (int i = 0; i < (int)patch.m_images.size(); ++i)
+        ofstr << patch.m_images[i] << ' ';
+      ofstr << endl;
+
+      ofstr << (int)patch.m_vimages.size() << endl;
+      for (int i = 0; i < (int)patch.m_vimages.size(); ++i){
+        ofstr << patch.m_vimages[i] << ' ';
+      }
+      ofstr << endl;
+      ofstr << endl;
     }
     ofstr.close();
   }
-
   if (bExportPSet)
   {
     char buffer[1024];
