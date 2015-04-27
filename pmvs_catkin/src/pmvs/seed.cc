@@ -131,9 +131,19 @@ void Cseed::initialMatch(const int index, const int id) {
   vector<int> indexes;
   m_fm.m_optim.collectImages(index, indexes);
 
+  // Cache all fundamental matrices for all image pairs.
+  vector<Mat3> fundamental_matrix_cache(indexes.size());
+  for (int i = 0; i < (int)indexes.size(); ++i) {
+    const int observer_image_index = indexes[i];
+    Mat3 F_tmp;
+    Image::setF(m_fm.m_pss.m_photos[index], m_fm.m_pss.m_photos[observer_image_index],
+                F_tmp, m_fm.m_level);
+    fundamental_matrix_cache[i] = F_tmp;
+  }
+
   if (m_fm.m_tau < (int)indexes.size())
     indexes.resize(m_fm.m_tau);
-  
+
   if (indexes.empty())
     return;  
 
@@ -149,28 +159,28 @@ void Cseed::initialMatch(const int index, const int id) {
     for (int x = 0; x < gwidth; ++x) {
       ++index2;
       if (!canAdd(index, x, y))
-  continue;
+        continue;
 
       for (int p = 0; p < (int)m_ppoints[index][index2].size(); ++p) {
-  // collect features that satisfies epipolar geometry
-  // constraints and sort them according to the differences of
-  // distances between two cameras.
-  vector<Ppoint> vcp;
-  collectCandidates(index, indexes,
-                          *m_ppoints[index][index2][p], vcp);
-        
-  int count = 0;
-  Cpatch bestpatch;
-  //======================================================================
-  for (int i = 0; i < (int)vcp.size(); ++i) {
-    Cpatch patch;
-    patch.m_coord = vcp[i]->m_coord;
-    patch.m_normal =
-            m_fm.m_pss.m_photos[index].m_center - patch.m_coord;
+        // collect features that satisfies epipolar geometry
+        // constraints and sort them according to the differences of
+        // distances between two cameras.
+        vector<Ppoint> vcp;
+        collectCandidates(index, indexes,
+                          *m_ppoints[index][index2][p], fundamental_matrix_cache, id, vcp);
 
-    unitize(patch.m_normal);
-    patch.m_normal[3] = 0.0;
-    patch.m_flag = 0;
+        int count = 0;
+        Cpatch bestpatch;
+        //======================================================================
+        for (int i = 0; i < (int)vcp.size(); ++i) {
+          Cpatch patch;
+          patch.m_coord = vcp[i]->m_coord;
+          patch.m_normal =
+              m_fm.m_pss.m_photos[index].m_center - patch.m_coord;
+
+          unitize(patch.m_normal);
+          patch.m_normal[3] = 0.0;
+          patch.m_flag = 0;
 
           ++m_fm.m_pos.m_counts[index][index2];
           const int ix = ((int)floor(vcp[i]->m_icoord[0] + 0.5f)) / m_fm.m_csize;
@@ -178,23 +188,23 @@ void Cseed::initialMatch(const int index, const int id) {
           const int index3 = iy * m_fm.m_pos.m_gwidths[vcp[i]->m_itmp] + ix;
           if (vcp[i]->m_itmp < m_fm.m_tnum)
             ++m_fm.m_pos.m_counts[vcp[i]->m_itmp][index3];
-          
-    const int flag = initialMatchSub(index, vcp[i]->m_itmp, id, patch);
-    if (flag == 0) {
-      ++count;
-      if (bestpatch.score(m_fm.m_nccThreshold) <
+
+          const int flag = initialMatchSub(index, vcp[i]->m_itmp, id, patch);
+          if (flag == 0) {
+            ++count;
+            if (bestpatch.score(m_fm.m_nccThreshold) <
                 patch.score(m_fm.m_nccThreshold))
-        bestpatch = patch;
-      if (m_fm.m_countThreshold0 <= count)
-        break;
-    }
+              bestpatch = patch;
+            if (m_fm.m_countThreshold0 <= count)
+              break;
+          }
         }
-  if (count != 0) {
-    Ppatch ppatch(new Cpatch(bestpatch));
-    m_fm.m_pos.addPatch(ppatch);
-    ++totalcount;
+        if (count != 0) {
+          Ppatch ppatch(new Cpatch(bestpatch));
+          m_fm.m_pos.addPatch(ppatch);
+          ++totalcount;
           break;
-  }
+        }
       }
     }
   }
@@ -258,17 +268,38 @@ void Cseed::collectCells(const int index0, const int index1,
 // make sorted array of feature points in images, that satisfy the
 // epipolar geometry coming from point in image
 void Cseed::collectCandidates(const int index, const std::vector<int>& indexes,
-                              const Cpoint& point, std::vector<Ppoint>& vcp) {
+                              const Cpoint& point, const vector<Mat3>& fundamental_matrix_cache, const int id, std::vector<Ppoint>& vcp) {
+
+  const double kMinGradientToEpipolarLineAngle = 0.1;
+
+  // Compute patch gradient.
+  std::vector<std::vector<Vec3f> > patch_texture(m_fm.m_wsize, std::vector<Vec3f>(m_fm.m_wsize));
+  float half_window = ((float) m_fm.m_wsize) / 2.0f;
+  Vec2f upper_left_corner = Vec2f(point.m_icoord[0] - half_window, point.m_icoord[1] - half_window);
+  for (float y = 0.0f; y < m_fm.m_wsize; ++y) {
+    for (float x = 0.0f; x < m_fm.m_wsize; ++x) {
+      patch_texture[y][x] = m_fm.m_pss.getColor(index, point.m_icoord[0] + x, point.m_icoord[1] + y, m_fm.m_level);
+    }
+  }
+
+  Vec2 patch_gradient(0.0, 0.0);
+  for (int y = 1; y < m_fm.m_wsize -1; ++y) {
+    for (int x = 1; x < m_fm.m_wsize -1; ++x) {
+      patch_gradient[1] += ((patch_texture[y][x - 1] - patch_texture[y][x + 1]) / 2.0f).norm();
+      patch_gradient[0] += ((patch_texture[y - 1][x] - patch_texture[y + 1][x]) / 2.0f).norm();
+    }
+  }
+  patch_gradient.unitize();
+
   const Vec3 p0(point.m_icoord[0], point.m_icoord[1], 1.0);
   for (int i = 0; i < (int)indexes.size(); ++i) {        
     const int indexid = indexes[i];
     
     vector<TVec2<int> > cells;
     collectCells(index, indexid, point, cells);
-    Mat3 F;
-    Image::setF(m_fm.m_pss.m_photos[index], m_fm.m_pss.m_photos[indexid],
-                F, m_fm.m_level);
-    
+
+    const Mat3& F = fundamental_matrix_cache[indexid];
+
     for (int i = 0; i < (int)cells.size(); ++i) {
       const int x = cells[i][0];      const int y = cells[i][1];
       if (!canAdd(indexid, x, y))
@@ -284,12 +315,32 @@ void Cseed::collectCandidates(const int index, const std::vector<int>& indexes,
           ++begin;
           continue;
         }
-          
         const Vec3 p1(rhs.m_icoord[0], rhs.m_icoord[1], 1.0);
-        if (m_fm.m_epThreshold <= Image::computeEPD(F, p0, p1)) {
-          ++begin;          
+        Vec3 epipolar_line = F * p1;
+        epipolar_line.unitize();
+        float epipolar_distance = 0.0;
+        const double epipolar_line_norm = sqrt(epipolar_line[0] * epipolar_line[0] + epipolar_line[1] * epipolar_line[1]);
+        if (epipolar_line_norm != 0.0){
+         epipolar_line /= epipolar_line_norm;
+         epipolar_distance = fabs(epipolar_line * p0);
+        }
+        if (m_fm.m_epThreshold <= epipolar_distance) {
+          ++begin;
           continue;
         }
+
+        // Make sure the gradient and the epipolar line are not perpendicular.
+        if (epipolar_line_norm != 0.0){
+          float angle = fabs(patch_gradient * Vec2(epipolar_line[0], epipolar_line[1]));
+          if(angle < kMinGradientToEpipolarLineAngle){
+            cout << index << "/" << indexid << " angle: " << angle << " -> too small!" << endl;
+            cout << "epipolar_line.unitized(): " << epipolar_line << endl;
+            cout << "epipolar_line_norm: " << epipolar_line_norm << endl;
+            cout << "patch_gradient: " << patch_gradient << endl << flush;
+            break;
+          }
+        }
+
         vcp.push_back(*begin);
         ++begin;
       }

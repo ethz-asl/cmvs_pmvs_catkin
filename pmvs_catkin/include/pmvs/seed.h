@@ -29,7 +29,7 @@ class Cseed {
                     const Cpoint& p0, std::vector<Vec2i>& cells);
   
   void collectCandidates(const int index, const std::vector<int>& indexes,
-                         const Cpoint& point, std::vector<Ppoint>& vcp);
+                         const Cpoint& point, const std::vector<Mat3>& fundamental_matrix_cache, const int id, std::vector<Ppoint>& vcp);
 
   int initialMatchSub(const int index0, const int index1,
                       const int id, Patch::Cpatch& patch);
