@@ -135,6 +135,8 @@ void CpatchOrganizerS::writePatches2(const std::string prefix, bool bExportPLY, 
       }
       ofstr << endl;
       ofstr << endl;
+
+      ++bpatch;
     }
     ofstr.close();
   }
