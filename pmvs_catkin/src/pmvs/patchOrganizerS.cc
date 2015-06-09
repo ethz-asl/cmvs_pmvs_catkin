@@ -93,47 +93,54 @@ void CpatchOrganizerS::writePatches2(const std::string prefix, bool bExportPLY, 
     ofstream ofstr;
     ofstr.open(buffer);
     ofstr << "PATCHES" << endl
-          << (int)m_ppatches.size() << endl;
-    for (int p = 0; p < (int)m_ppatches.size(); ++p) {
-      Cpatch patch = *m_ppatches[p];
-      index2image(patch);
+        << (int)m_ppatches.size() << endl;
 
-      Vec3i color;
+    vector<Ppatch>::const_iterator bpatch = m_ppatches.begin();
+    const vector<Ppatch>::const_iterator bend = m_ppatches.end();
+    while (bpatch != bend) {
       int denom = 0;
+
+      // Project the 3D patch coordinates into all the observer images,
+      // extract the color and compute the average color.
       Vec3f colorf;
-      for (int i = 0; i < (int)patch.m_images.size(); ++i) {
-        const int image = patch.m_images[i];
-        colorf += m_fm.m_pss.getColor(patch.m_coord, image, m_fm.m_level);
+      for (int i = 0; i < (int)(*bpatch)->m_images.size(); ++i) {
+        const int image = (*bpatch)->m_images[i];
+        colorf += m_fm.m_pss.getColor((*bpatch)->m_coord, image, m_fm.m_level);
         denom++;
       }
+      // Compute average color.
       colorf /= denom;
+      Vec3i color;
       color[0] = min(255,(int)floor(colorf[0] + 0.5f));
       color[1] = min(255,(int)floor(colorf[1] + 0.5f));
       color[2] = min(255,(int)floor(colorf[2] + 0.5f));
 
       ofstr << "PATCHS" << endl
-          << patch.m_coord << endl
-          << patch.m_normal << endl
-          << patch.m_ncc << ' '
-          << patch.m_dscale << ' '
-          << patch.m_ascale << endl
+          << (*bpatch)->m_coord << endl
+          << (*bpatch)->m_normal << endl
+          << (*bpatch)->m_ncc << ' '
+          << (*bpatch)->m_dscale << ' '
+          << (*bpatch)->m_ascale << endl
           << color[0] << ' '
           << color[1] << ' '
           << color[2] << endl
-          << (int)patch.m_images.size() << endl;
-      for (int i = 0; i < (int)patch.m_images.size(); ++i)
-        ofstr << patch.m_images[i] << ' ';
+          << (int)(*bpatch)->m_images.size() << endl;
+      for (int i = 0; i < (int)(*bpatch)->m_images.size(); ++i)
+        ofstr << m_fm.m_pss.m_images[(*bpatch)->m_images[i]] << ' ';
       ofstr << endl;
 
-      ofstr << (int)patch.m_vimages.size() << endl;
-      for (int i = 0; i < (int)patch.m_vimages.size(); ++i){
-        ofstr << patch.m_vimages[i] << ' ';
+      ofstr << (int)(*bpatch)->m_vimages.size() << endl;
+      for (int i = 0; i < (int)(*bpatch)->m_vimages.size(); ++i){
+        ofstr << m_fm.m_pss.m_images[(*bpatch)->m_vimages[i]] << ' ';
       }
       ofstr << endl;
       ofstr << endl;
+
+      ++bpatch;
     }
     ofstr.close();
   }
+
   if (bExportPSet)
   {
     char buffer[1024];
