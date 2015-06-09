@@ -1,7 +1,5 @@
 ##Catkinized CMVS/PMVS2##
 
-**CMVS is currently ```CATKIN_IGNORE```d since it consides a Metis version which collides with out metis_catkin repository.**
-
 **Dependencies:**
 
 * Catkinized Eigen (e.g. [ethz-asl/eigen_catkin](https://github.com/ethz-asl/eigen_catkin))
