@@ -96,7 +96,7 @@ void CpatchOrganizerS::writePatches2(const std::string prefix, bool bExportPLY, 
         << (int)m_ppatches.size() << endl;
 
     vector<Ppatch>::const_iterator bpatch = m_ppatches.begin();
-    vector<Ppatch>::const_iterator bend = m_ppatches.end();
+    const vector<Ppatch>::const_iterator bend = m_ppatches.end();
     while (bpatch != bend) {
       int denom = 0;
 
