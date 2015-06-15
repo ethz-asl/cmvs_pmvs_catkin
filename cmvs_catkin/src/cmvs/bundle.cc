@@ -11,8 +11,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-extern "C"
-{
+extern "C" {
 int boundary_points;
 int spectral_initialization = 0;
 int cutType;
