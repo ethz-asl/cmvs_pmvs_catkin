@@ -13,12 +13,9 @@ endif(CMAKE_SIZEOF_VOID_P EQUAL 8)
 include_directories( thirdparty/graclus1.2/multilevelLib
                      thirdparty/graclus1.2/metisLib)
 
-#set(CMAKE_SHARED_LINKER_FLAGS "${DCMAKE_SHARED_LINKER_FLAGS} -undefined dynamic_lookup")
 if(APPLE)
-#       set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-U,_boundary_points,-U,_spectral_initialization,-U,_cutType,-U,_memory_saving")
  set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-U,_boundary_points -Wl,-U,_spectral_initialization -Wl,-U,_cutType -Wl,-U,_memory_saving")
 endif(APPLE)
-
 
 file(GLOB GRACLUS_METIS_LIB_C thirdparty/graclus1.2/metisLib/*.c)
 file(GLOB MULTILEVEL_LIB thirdparty/graclus1.2/multilevelLib/*.c)
