@@ -7,22 +7,22 @@ catkin_simple(ALL_DEPS_REQUIRED)
 
 # GRACLUS
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-	add_definitions(-DNUMBITS=64)
+  add_definitions(-DNUMBITS=64)
 endif(CMAKE_SIZEOF_VOID_P EQUAL 8)
 
-include_directories( thirdparty/graclus1.2/multilevelLib
-                     thirdparty/graclus1.2/metisLib)
+include_directories(thirdparty/graclus1.2/multilevelLib
+                    thirdparty/graclus1.2/metisLib)
 
 # The graclus library declares these for external variables
 # that are then defined in CMVS. On OSX undefined external
 # symbols raise a linker error by default.
 # See: http://glandium.org/blog/?p=2764
 if(APPLE)
- set(UNDEF_SYMBOL_1 "-Wl,-U,_boundary_points")
- set(UNDEF_SYMBOL_2 "-Wl,-U,_spectral_initialization")
- set(UNDEF_SYMBOL_3 "-Wl,-U,_cutType")
- set(UNDEF_SYMBOL_4 "-Wl,-U,_memory_saving")
- set(CMAKE_SHARED_LINKER_FLAGS "${UNDEF_SYMBOL_1} \
+  set(UNDEF_SYMBOL_1 "-Wl,-U,_boundary_points")
+  set(UNDEF_SYMBOL_2 "-Wl,-U,_spectral_initialization")
+  set(UNDEF_SYMBOL_3 "-Wl,-U,_cutType")
+  set(UNDEF_SYMBOL_4 "-Wl,-U,_memory_saving")
+  set(CMAKE_SHARED_LINKER_FLAGS "${UNDEF_SYMBOL_1} \
                                 ${UNDEF_SYMBOL_2} \
                                 ${UNDEF_SYMBOL_3} \
                                 ${UNDEF_SYMBOL_4}")
