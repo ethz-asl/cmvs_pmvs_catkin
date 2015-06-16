@@ -14,7 +14,9 @@
 #include <metis.h>
 #include <float.h>
 
-extern int cutType, memory_saving, boundary_points;
+extern int cutType __attribute__((weak_import));
+extern int memory_saving __attribute__((weak_import));
+extern int boundary_points __attribute__((weak_import));
 
 void Compute_Weights(CtrlType *ctrl, GraphType *graph, idxtype *w)
      /* compute the weights for WKKM; for the time, only Ncut. w is zero-initialized */

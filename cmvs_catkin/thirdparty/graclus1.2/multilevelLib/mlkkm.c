@@ -17,7 +17,7 @@
 //#include <driver.h>
 //#include "../spectralLib/driver.h"
 
-extern int spectral_initialization;
+extern int spectral_initialization __attribute__((weak_import));
 
 /*************************************************************************
 * This function is the entry point for MLKKM
