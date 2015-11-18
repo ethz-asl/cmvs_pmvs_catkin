@@ -15,10 +15,11 @@ CphotoSetS::~CphotoSetS() {
 
 
 void CphotoSetS::init(const std::vector<int>& images, const std::string prefix,
-                      const int maxLevel, const int size, const int alloc) {
+                      const int maxLevel, const int size, const int alloc,
+                      const unsigned int cnumOffset) {
   m_images = images;
   m_num = (int)images.size();
-  
+
   for (int i = 0; i < (int)images.size(); ++i)
     m_dict[images[i]] = i;
   
@@ -27,7 +28,7 @@ void CphotoSetS::init(const std::vector<int>& images, const std::string prefix,
   m_photos.resize(m_num);
   cerr << "Reading images: " << flush;
   for (int index = 0; index < m_num; ++index) {
-    const int image = m_images[index];
+    const int image = m_images[index] + cnumOffset;
 
     char test0[1024], test1[1024];
     char test2[1024], test3[1024];

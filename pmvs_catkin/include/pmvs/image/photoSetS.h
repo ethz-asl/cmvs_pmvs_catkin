@@ -12,7 +12,8 @@ class CphotoSetS {
   virtual ~CphotoSetS();
 
   void init(const std::vector<int>& images, const std::string prefix,
-            const int maxLevel, const int size, const int alloc);
+            const int maxLevel, const int size, const int alloc,
+            const unsigned int cnumOffset = 0u);
   
   // grabTex given 2D sampling information
   void grabTex(const int index, const int level, const Vec2f& icoord,
