@@ -37,12 +37,13 @@ Cbundle::~Cbundle() {
 void Cbundle::prep(const std::string prefix, const int imageThreshold,
                    const int tau, const float scoreRatioThreshold,
                    const float coverageThreshold,
-                   const int pnumThreshold, const int CPU) {
+                   const int pnumThreshold, const int CPU, const unsigned int cnumOffset) {
   if (pnumThreshold != 0) {
     cerr << "Should use pnumThreshold = 0" << endl;
     exit (1);
   }
   
+  m_cnumOffset = cnumOffset;
   m_prefix = prefix;
   m_imageThreshold = imageThreshold;
   m_tau = tau;
@@ -68,7 +69,7 @@ void Cbundle::prep(const std::string prefix, const int imageThreshold,
 
   m_dlevel = 7;
   m_maxLevel = 12;
-  m_pss.init(images, prefix, m_maxLevel + 1, 5, 0);
+  m_pss.init(images, prefix, m_maxLevel + 1, 5, 0, cnumOffset);
   
   cerr << "Set widths/heights..." << flush;
   setWidthsHeightsLevels();
@@ -125,11 +126,11 @@ void Cbundle::prep2(void) {
 void Cbundle::run(const std::string prefix, const int imageThreshold,
                   const int tau, const float scoreRatioThreshold,
                   const float coverageThreshold,
-                  const int pnumThreshold, const int CPU) {
+                  const int pnumThreshold, const int CPU, const unsigned int cnumOffset) {
   startTimer();
   
   prep(prefix, imageThreshold, tau, scoreRatioThreshold,
-       coverageThreshold, pnumThreshold, CPU);
+       coverageThreshold, pnumThreshold, CPU, cnumOffset);
 
   cerr << '\t' << curTimer()/CLOCKS_PER_SEC << " secs" << endl;
 
@@ -178,6 +179,14 @@ void Cbundle::run(const std::string prefix, const int imageThreshold,
   // Output results
   writeVis();
   writeGroups();
+}
+
+void Cbundle::run(const std::string prefix, const int imageThreshold,
+                  const int tau, const float scoreRatioThreshold,
+                  const float coverageThreshold,
+                  const int pnumThreshold, const int CPU) {
+  const unsigned int no_offset = 0u;
+  run(prefix, imageThreshold, tau, scoreRatioThreshold, coverageThreshold, pnumThreshold, CPU, no_offset);
 }
 
 float Cbundle::computeLink(const int image0, const int image1) {

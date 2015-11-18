@@ -36,6 +36,7 @@ void Ccamera::init(const std::string cname, const int maxLevel) {
     m_txtType = 3;
   else {
     cerr << "Unrecognizable txt format" << endl;
+    cerr << "File name: " << cname << endl;
     exit (1);
   }
 

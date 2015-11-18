@@ -62,15 +62,20 @@ class Cbundle {
   Cbundle(void);
   virtual ~Cbundle();
   
-  void run(const std::string prefix, const int imageThreshold,
-           const int tau, const float scoreRatioThreshold,
-           const float coverageThreshold, const int pnumThreshold,
-           const int CPU);
+  void run(const std::string prefix, const int imageThreshold, const int tau,
+             const float scoreRatioThreshold, const float coverageThreshold,
+             const int pnumThreshold, const int CPU, const unsigned int cnumOffset);
+
+  void run(const std::string prefix, const int imageThreshold, const int tau,
+           const float scoreRatioThreshold, const float coverageThreshold,
+           const int pnumThreshold, const int CPU);
+
   // root dir
   std::string m_prefix;
 
   // # of cameras
   int m_cnum;
+  unsigned int m_cnumOffset;
   // # of points
   int m_pnum;
   
@@ -109,7 +114,7 @@ class Cbundle {
   void prep(const std::string prefix, const int imageThreshold,
             const int tau, const float scoreRatioThreshold,
             const float coverageThreshold, const int pnumThreshold,
-            const int CPU);
+            const int CPU, const unsigned int cnumOffset);
 
   void prep2(void);
   
