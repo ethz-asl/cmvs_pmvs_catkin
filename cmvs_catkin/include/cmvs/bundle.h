@@ -63,8 +63,8 @@ class Cbundle {
   virtual ~Cbundle();
   
   void run(const std::string prefix, const int imageThreshold, const int tau,
-           const float scoreRatioThreshold, const float coverageThreshold,
-           const int pnumThreshold, const int CPU);
+             const float scoreRatioThreshold, const float coverageThreshold,
+             const int pnumThreshold, const int CPU, const unsigned int cnumOffset);
 
   void run(const std::string prefix, const int imageThreshold, const int tau,
            const float scoreRatioThreshold, const float coverageThreshold,
