@@ -126,6 +126,14 @@ void Cbundle::prep2(void) {
 void Cbundle::run(const std::string prefix, const int imageThreshold,
                   const int tau, const float scoreRatioThreshold,
                   const float coverageThreshold,
+                  const int pnumThreshold, const int CPU) {
+  const unsigned int no_offset = 0u;
+  run(prefix, imageThreshold, tau, scoreRatioThreshold, coverageThreshold, pnumThreshold, CPU, no_offset);
+}
+
+void Cbundle::run(const std::string prefix, const int imageThreshold,
+                  const int tau, const float scoreRatioThreshold,
+                  const float coverageThreshold,
                   const int pnumThreshold, const int CPU, const unsigned int cnumOffset) {
   startTimer();
   
