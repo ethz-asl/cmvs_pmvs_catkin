@@ -16,7 +16,6 @@ include_directories(${X11_INCLUDE_DIRS})
 include_directories(${Xext_INCLUDE_DIRS})
 include_directories(${BOOST_INCLUDE_DIRS})
 include_directories(${JPEG_INCLUDE_DIR})
-include_directories(${CATKIN_DEVEL_PREFIX}/include)
 
 set(BASE_PMVS base_pmvs)
 set(PMVS pmvs2)
