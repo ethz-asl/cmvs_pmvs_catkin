@@ -34,7 +34,7 @@ git clone git@github.com:ethz-asl/cmvs_pmvs_catkin
 # Checkout catkin dependencies
 git clone git@github.com:ethz-asl/eigen_catkin.git
 git clone git@github.com:ethz-asl/nlopt.git
-git clone https://github.com/catkin/catkin_simple.git
+git clone git@github.com:catkin/catkin_simple.git
 
 # Build packages
 catkin build cmvs_catkin pmvs_catkin
