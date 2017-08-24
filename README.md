@@ -2,7 +2,7 @@
 
 This is a catkinized version of CMVS and PMVS2, you will need to install ROS, catkin and create a catkin workspace. If you want to embed these packages into an existing workspace, make sure the dependencies listed below are available.
 
-Follow these instructions: **Tested on Ubuntu 14.04 and ROS Indigo**
+Follow these instructions: **Ubuntu 14.04 and ROS Indigo**
 
 ```bash
 #Install ROS
