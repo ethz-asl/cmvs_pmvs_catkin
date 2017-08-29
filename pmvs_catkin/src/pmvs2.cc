@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
     cout << endl << argv[i];
   }
   cout << std::endl;
-  
+
   PMVS3::Soption option;
   option.init(argv[1], argv[2]);
 
