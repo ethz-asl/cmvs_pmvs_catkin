@@ -1,11 +1,11 @@
-#include <iostream>
-#include <fstream>
+#include <cassert>
 #include <cstdlib>
+#include <fstream>
+#include <iostream>
 #define _USE_MATH_DEFINES
-#include <math.h>
 #include "pmvs/option.h"
 #include <algorithm>
-
+#include <math.h>
 
 using namespace std;
 using namespace PMVS3;
@@ -23,23 +23,31 @@ Soption::Soption(void) {
   m_maxAngleThreshold = 10.0f * M_PI / 180.0f;
   // The smaller the tighter
   m_quadThreshold = 2.5f;
-}  
+}
 
 void Soption::init(const std::string prefix, const std::string option) {
   m_prefix = prefix;
   m_option = option;
   std::ifstream ifstr;
   string optionfile = prefix + option;
+  std::cout << "Opening optional file: " << optionfile << std::endl;
   ifstr.open(optionfile.c_str());
+  if(!ifstr.is_open()){
+    std::cerr << "Could not open option file: " << optionfile << std::endl;
+    assert(false);
+  }
+
+  static const int kBufferSize = 4096;
+
   while (1) {
     string name;
     ifstr >> name;
     if (ifstr.eof())
       break;
     if (name[0] == '#') {
-      char buffer[1024];
+      char buffer[kBufferSize];
       ifstr.putback('#');
-      ifstr.getline(buffer, 1024);
+      ifstr.getline(buffer, kBufferSize);
       continue;
     }
     if (name == "level")             ifstr >> m_level;
@@ -104,7 +112,7 @@ void Soption::init(const std::string prefix, const std::string option) {
          << m_tflag << ' ' << m_oflag << endl;
     exit (1);
   }
-  
+
   //----------------------------------------------------------------------
   string sbimages = prefix + string("bimages.dat");
 
@@ -113,11 +121,11 @@ void Soption::init(const std::string prefix, const std::string option) {
 
   initOimages();
   initVisdata();
-  
+
   if (m_useBound)
     initBindexes(sbimages);
 
-  cerr << "--------------------------------------------------" << endl  
+  cerr << "--------------------------------------------------" << endl
        << "--- Summary of specified options ---" << endl;
   cerr << "# of timages: " << (int)m_timages.size();
   if (m_tflag == -1)
@@ -153,7 +161,7 @@ void Soption::initOimages(void) {
          << svisdata << endl;
     exit (1);
   }
-  
+
   string header;  int num2;
   ifstr >> header >> num2;
 
@@ -175,7 +183,7 @@ void Soption::initOimages(void) {
     }
   }
   ifstr.close();
-  
+
   sort(m_oimages.begin(), m_oimages.end());
   m_oimages.erase(unique(m_oimages.begin(), m_oimages.end()), m_oimages.end());
 }
@@ -207,7 +215,7 @@ void Soption::initVisdata(void) {
 // Given m_timages and m_oimages, set m_visdata, m_visdata2
 void Soption::initVisdata2(void) {
   string svisdata = m_prefix + string("vis.dat");
-  
+
   vector<int> images;
   images.insert(images.end(), m_timages.begin(), m_timages.end());
   images.insert(images.end(), m_oimages.begin(), m_oimages.end());
@@ -222,7 +230,7 @@ void Soption::initVisdata2(void) {
          << svisdata << endl;
     exit (1);
   }
-  
+
   string header;  int num2;
   ifstr >> header >> num2;
 
@@ -253,7 +261,7 @@ void Soption::initVisdata2(void) {
   ifstr.close();
 
   const int num = (int)images.size();
-  m_visdata.clear();  
+  m_visdata.clear();
   m_visdata.resize(num);
   for (int y = 0; y < num; ++y) {
     m_visdata[y].resize(num);
@@ -271,11 +279,11 @@ void Soption::initVisdata2(void) {
     }
   }
 }
-                                             
+
 void Soption::initBindexes(const std::string sbimages) {
   if (sbimages.empty())
     return;
-  
+
   m_bindexes.clear();
   ifstream ifstr;
   ifstr.open(sbimages.c_str());
@@ -283,7 +291,7 @@ void Soption::initBindexes(const std::string sbimages) {
     cerr << "File not found: " << sbimages << endl;
     exit (1);
   }
-  
+
   cerr << "Reading bimages" << endl;
   int itmp;
   ifstr >> itmp;
